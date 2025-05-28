@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
-import type { RouteRecordRaw } from 'vue-router';
 import Home from "@/pages/dashboard/index.vue";
 import History from "@/pages/history/index.vue";
 import Login from "@/pages/auth/login.vue";
 
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import AppLayout from "@/layouts/AppLayout.vue";
+
+import { useAuthStore } from '@/store/auth';
 
 const routes = [
   {
@@ -31,9 +32,9 @@ const router = createRouter({
 
 // Global route guard
 router.beforeEach((to, from, next) => {
-  const isLoggedIn = true // Replace with real auth check
+  const auth = useAuthStore()
 
-  if (to.meta.requiresAuth && !isLoggedIn) {
+  if (to.meta.requiresAuth && !auth.token) {
     next('/login')
   } else {
     next()
