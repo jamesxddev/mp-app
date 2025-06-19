@@ -41,7 +41,7 @@ import {
       </div>
     </header>
     <div class="flex flex-1 flex-col gap-4 p-4">
-      This is History Page
+      This is Payroll Page
     </div>
   </SidebarInset>
 </template>

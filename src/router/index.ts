@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
+
 import Home from "@/pages/dashboard/index.vue";
-import History from "@/pages/history/index.vue";
 import Login from "@/pages/auth/login.vue";
+import Payroll from "@/pages/admin/payroll/index.vue";
 
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import AppLayout from "@/layouts/AppLayout.vue";
@@ -20,7 +21,7 @@ const routes = [
     meta: { requiresAuth: true },
     children: [
       { path: '', name: 'Dashboard', component: Home },
-      { path: '/history', name: 'History', component: History },
+      { path: '/payroll', name: 'Payroll', component: Payroll },
     ],
   },
 ]
