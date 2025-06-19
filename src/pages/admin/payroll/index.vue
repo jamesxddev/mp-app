@@ -1,47 +1,65 @@
-<script lang="ts">
-export const iframeHeight = '800px'
-export const description = 'A sidebar with submenus.'
-</script>
-
 <script setup lang="ts">
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
-import { Separator } from '@/components/ui/separator'
+import { ref } from 'vue'
+// import { cn } from '@/utils'
 import {
   SidebarInset,
-  SidebarTrigger,
 } from '@/components/ui/sidebar'
+import { Check, ChevronsUpDown, Search } from 'lucide-vue-next'
+import { Button } from '@/components/ui/button'
+import Header from '@/components/Header.vue';
+
+import { Combobox, ComboboxAnchor, ComboboxEmpty, ComboboxGroup, ComboboxInput, ComboboxItem, ComboboxItemIndicator, ComboboxList, ComboboxTrigger } from '@/components/ui/combobox'
+
+const frameworks = [
+  { value: 'Cha', label: 'Cha' },
+  { value: 'Ally', label: 'Ally' }
+]
+
+const value = ref<typeof frameworks[0]>()
 </script>
 
 <template>
-  <SidebarInset>
-    <header class="flex h-16 shrink-0 items-center gap-2 border-b">
-      <div class="flex items-center gap-2 px-3">
-        <SidebarTrigger />
-        <Separator orientation="vertical" class="mr-2 h-4" />
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem class="hidden md:block">
-              <BreadcrumbLink href="#">
-                Building Your Application
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator class="hidden md:block" />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
-    </header>
-    <div class="flex flex-1 flex-col gap-4 p-4">
-      This is Payroll Page
-    </div>
-  </SidebarInset>
+    <SidebarInset>
+        <Header />
+
+        <div class="flex flex-1 flex-col gap-4 p-4">
+            <div>
+                <Combobox v-model="value" by="label">
+                    <ComboboxAnchor as-child>
+                        <ComboboxTrigger as-child>
+                            <Button variant="outline" class="justify-between">
+                                {{ value?.label ?? 'Select User' }}
+
+                                <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                        </ComboboxTrigger>
+                    </ComboboxAnchor>
+
+                    <ComboboxList>
+                        <div class="relative w-full max-w-sm items-center">
+                            <ComboboxInput class="pl-9 focus-visible:ring-0 border-0 border-b rounded-none h-10"
+                                placeholder="Select User" />
+                            <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
+                                <Search class="size-4 text-muted-foreground" />
+                            </span>
+                        </div>
+
+                        <ComboboxEmpty>
+                            No framework found.
+                        </ComboboxEmpty>
+
+                        <ComboboxGroup>
+                            <ComboboxItem v-for="framework in frameworks" :key="framework.value" :value="framework">
+                                {{ framework.label }}
+
+                                <ComboboxItemIndicator>
+                                    <!-- <Check :class="cn('ml-auto h-4 w-4')" /> -->
+                                </ComboboxItemIndicator>
+                            </ComboboxItem>
+                        </ComboboxGroup>
+                    </ComboboxList>
+                </Combobox>
+            </div>
+        </div>
+    </SidebarInset>
 </template>
