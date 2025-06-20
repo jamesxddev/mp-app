@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { type Ref, ref } from 'vue'
 // import { cn } from '@/utils'
 import {
   SidebarInset,
 } from '@/components/ui/sidebar'
-import { Check, ChevronsUpDown, Search } from 'lucide-vue-next'
+import { Check, ChevronsUpDown, Search, CalendarIcon } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import Header from '@/components/Header.vue';
 
@@ -20,6 +20,16 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
+import type { DateRange } from 'reka-ui'
+import {
+  CalendarDate,
+  DateFormatter,
+  getLocalTimeZone,
+} from '@internationalized/date'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { RangeCalendar } from '@/components/ui/range-calendar'
+import { cn } from '@/utils'
+
 const frameworks = [
   { value: 'Cha', label: 'Cha' },
   { value: 'Ally', label: 'Ally' }
@@ -27,50 +37,47 @@ const frameworks = [
 
 const invoices = [
   {
-    invoice: 'INV001',
-    paymentStatus: 'Paid',
-    totalAmount: '$250.00',
-    paymentMethod: 'Credit Card',
+    invoice: 'June 1, 2025',
+    paymentStatus: '8:00 AM',
+    totalAmount: '5:00 PM',
+    paymentMethod: '5:00 PM',
   },
   {
-    invoice: 'INV002',
-    paymentStatus: 'Pending',
-    totalAmount: '$150.00',
-    paymentMethod: 'PayPal',
+    invoice: 'June 2, 2025',
+    paymentStatus: '8:00 AM',
+    totalAmount: '5:00 PM',
+    paymentMethod: '5:00 PM',
   },
   {
-    invoice: 'INV003',
-    paymentStatus: 'Unpaid',
-    totalAmount: '$350.00',
-    paymentMethod: 'Bank Transfer',
+    invoice: 'June 3, 2025',
+    paymentStatus: '8:00 AM',
+    totalAmount: '5:00 PM',
+    paymentMethod: '5:00 PM',
   },
   {
-    invoice: 'INV004',
-    paymentStatus: 'Paid',
-    totalAmount: '$450.00',
-    paymentMethod: 'Credit Card',
+    invoice: 'June 4, 2025',
+    paymentStatus: '8:00 AM',
+    totalAmount: '5:00 PM',
+    paymentMethod: '5:00 PM',
   },
   {
-    invoice: 'INV005',
-    paymentStatus: 'Paid',
-    totalAmount: '$550.00',
-    paymentMethod: 'PayPal',
-  },
-  {
-    invoice: 'INV006',
-    paymentStatus: 'Pending',
-    totalAmount: '$200.00',
-    paymentMethod: 'Bank Transfer',
-  },
-  {
-    invoice: 'INV007',
-    paymentStatus: 'Unpaid',
-    totalAmount: '$300.00',
-    paymentMethod: 'Credit Card',
-  },
+    invoice: 'June 5, 2025',
+    paymentStatus: '8:00 AM',
+    totalAmount: '5:00 PM',
+    paymentMethod: '5:00 PM',
+  }
 ]
 
 const value = ref<typeof frameworks[0]>()
+
+const df = new DateFormatter('en-US', {
+  dateStyle: 'medium',
+})
+
+const valueDate = ref({
+  start: new CalendarDate(2022, 1, 20),
+  end: new CalendarDate(2022, 1, 20).add({ days: 20 }),
+}) as Ref<DateRange>
 </script>
 
 <template>
@@ -117,19 +124,46 @@ const value = ref<typeof frameworks[0]>()
             </div>
         </div>
 
+        <div class="flex justify-end gap-2 p-4">
+                <Popover>
+                    <PopoverTrigger as-child>
+                        <Button variant="outline" :class="cn(
+                            'w-[280px] justify-start text-left font-normal',
+                            !value && 'text-muted-foreground',
+                        )">
+                            <CalendarIcon class="mr-2 h-4 w-4" />
+                            <template v-if="valueDate.start">
+                                <template v-if="valueDate.end">
+                                    {{ df.format(valueDate.start.toDate(getLocalTimeZone())) }} - {{
+                                        df.format(valueDate.end.toDate(getLocalTimeZone())) }}
+                                </template>
+
+                                <template v-else>
+                                    {{ df.format(valueDate.start.toDate(getLocalTimeZone())) }}
+                                </template>
+                            </template>
+                            <template v-else>
+                                Pick a date
+                            </template>
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent class="w-auto p-0">
+                        <RangeCalendar v-model="valueDate" initial-focus :number-of-months="2"
+                            @update:start-value="(startDate) => valueDate.start = startDate" />
+                    </PopoverContent>
+                </Popover>
+                <Button>Run Payroll</Button>
+            </div>
+
         <div class="flex flex-col gap-4 p-4">
             <Table>
-                <TableCaption>A list of your recent invoices.</TableCaption>
                 <TableHeader>
                     <TableRow>
-                        <TableHead class="w-[100px]">
-                            Invoice
+                        <TableHead>
+                            Date
                         </TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Method</TableHead>
-                        <TableHead class="text-right">
-                            Amount
-                        </TableHead>
+                        <TableHead>Time In</TableHead>
+                        <TableHead>Time Out</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -139,9 +173,7 @@ const value = ref<typeof frameworks[0]>()
                         </TableCell>
                         <TableCell>{{ invoice.paymentStatus }}</TableCell>
                         <TableCell>{{ invoice.paymentMethod }}</TableCell>
-                        <TableCell class="text-right">
-                            {{ invoice.totalAmount }}
-                        </TableCell>
+
                     </TableRow>
                 </TableBody>
             </Table>
